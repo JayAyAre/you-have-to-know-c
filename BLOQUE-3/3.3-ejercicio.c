@@ -8,7 +8,7 @@ int main(){
     printf("Introduce x numeros por teclado.\n");
     scanf("%f", &contador);
 
-    for (size_t i = 0; i < contador; i++)
+    for (int i = 0; i < contador; i++)
     {
         printf("Introduce el numero correspondiente a la posicion %d.\n", i);
         scanf("%d", &numero);

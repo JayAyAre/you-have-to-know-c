@@ -11,8 +11,15 @@ int main(){
     printf("Introduce el primer numero por teclado.\n");
     scanf("%d", &x);
 
-    printf("Introduce el segundo numero por teclado.\n");
+    printf("Introduce el segundo numero por teclado, mayor que el primero.\n");
     scanf("%d", &y);
+    /*Version 3-5
+    do
+    {
+        printf("Introduce el segundo numero por teclado, mayor que el primero.\n");
+        scanf("%d", &y);
+    } while (x >= y);
+    */
 
     // La estructura for, nos permite iterar sobre un rango de numeros
     // y ejecutar un bloque de codigo para cada numero

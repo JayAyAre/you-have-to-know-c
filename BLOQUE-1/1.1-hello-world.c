@@ -4,7 +4,7 @@
 
 
 int main() {
-    printf("Hello World!");
+    printf("Hello World!"); // Es una funcion incluida en la libreria stdio
     system("pause");
     return 0;
 }
