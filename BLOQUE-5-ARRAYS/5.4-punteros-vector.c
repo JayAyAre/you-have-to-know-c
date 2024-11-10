@@ -15,6 +15,6 @@ int main() {
 
     // Llamadas a funciones
     imprimir_array_puntero(numeros); // Pasando como puntero
-
+    printf("%x", 16); // Imprimir en hexadecimal
     return 0;
 }
