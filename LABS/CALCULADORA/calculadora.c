@@ -22,7 +22,7 @@ int main() {
                 printf("El factorial de %d es %d\n", numero, factorial(numero));
                 break;
             case 2:
-                printf("Ingrese dos numeros (El primero es mayor): ");
+                printf("Ingrese dos numeros: ");
                 int m, n;
                 scanf("%d %d", &n, &m);
                 printf("El numero de variaciones sin repeticion es %d\n", variacions_sense_repeticio(n, m));
