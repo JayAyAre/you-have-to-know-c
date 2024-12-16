@@ -1,0 +1,13 @@
+En esta fase, se diseñarán los diferentes procedimientos basados en el análisis anterior. Algunos de los procedimientos:
+
+Leer palabras del archivo.
+
+Generar sopa de letras.
+
+Colocar palabras de forma aleatoria (sin permitir superposición si no se requiere).
+
+Rellenar espacios vacíos con letras aleatorias.
+
+Mostrar sopa en pantalla.
+
+Guardar sopa en un archivo.

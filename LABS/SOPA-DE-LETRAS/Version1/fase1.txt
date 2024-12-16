@@ -1,0 +1,15 @@
+En esta fase, el objetivo es analizar y crear un diagrama de flujo que detalle el proceso general del juego. Los pasos clave son:
+
+Leer palabras de un archivo de texto: El programa debe leer las palabras desde un archivo, de forma que estas sean las que se colocarán en la sopa de letras.
+
+Validar las dimensiones de la sopa: El tamaño de la sopa debe ser validado dentro del rango permitido (de 10x10 a 20x20).
+
+Generar la sopa de letras vacía: Inicializar una matriz para la sopa de letras.
+
+Colocar las palabras en la sopa: Las palabras se deben colocar en posiciones aleatorias en la sopa, respetando las restricciones (sin superposiciones si no se permite).
+
+Rellenar espacios vacíos con letras aleatorias: Si hay espacios vacíos en la sopa, estos deben ser llenados con letras aleatorias.
+
+Guardar la sopa de letras en un archivo: Una vez generada la sopa, se debe guardar en un archivo de texto.
+
+Mostrar la sopa de letras en la pantalla: Finalmente, se debe mostrar la sopa de letras.
