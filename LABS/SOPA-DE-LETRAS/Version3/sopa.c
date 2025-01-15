@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #define MAX_SIZE 20
@@ -17,22 +18,30 @@ int colocarPalabraDiagonal(char sopa[MAX_SIZE][MAX_SIZE], const char *palabra, i
 void rellenarEspacios(char sopa[MAX_SIZE][MAX_SIZE], int filas, int columnas);
 void guardarSopa(const char *filename, char sopa[MAX_SIZE][MAX_SIZE], int filas, int columnas);
 void mostrarSopa(char sopa[MAX_SIZE][MAX_SIZE], int filas, int columnas);
-int generarDireccionAleatoria(); // Para elegir la dirección
+int generarDireccionAleatoria();
+double calcularLongitudMedia(char palabras[MAX_WORDS][MAX_WORD_LEN], int numPalabras);
 
 int main() {
     srand(time(NULL));
     char sopa[MAX_SIZE][MAX_SIZE];
     char palabras[MAX_WORDS][MAX_WORD_LEN];
     int numPalabras = 0, filas, columnas;
-    const char *diccionario = "diccionari.txt";
+    char archivoEntrada[50];
     const char *archivoSalida = "sopa.txt";
 
+    // Solicitar el nombre del archivo de palabras
+    printf("Introduce el nombre del archivo de palabras (ej: programacion.txt o animales.txt): ");
+    scanf("%s", archivoEntrada);
+
     // Leer palabras del fichero
-    leerPalabras(diccionario, palabras, &numPalabras);
+    leerPalabras(archivoEntrada, palabras, &numPalabras);
     if (numPalabras == 0) {
-        printf("No se encontraron palabras en el fichero.\n");
+        printf("No se encontraron palabras en el fichero o el archivo no existe.\n");
         return 1;
     }
+
+    // Calcular longitud media de las palabras
+    double longitudMedia = calcularLongitudMedia(palabras, numPalabras);
 
     // Solicitar dimensiones al usuario
     int dimensionesValidas = 0;
@@ -48,14 +57,25 @@ int main() {
         }
     }
 
+    // Calcular número máximo de palabras sugerido
+    int palabrasSugeridas = (int)(0.3 * (filas * columnas) / longitudMedia);
+    printf("Numero maximo de palabras sugerido para esta sopa: %d\n", palabrasSugeridas);
+
     // Generar la sopa de letras vacía
     generarSopa(sopa, filas, columnas);
 
-    // Asegurarse de colocar al menos 5 palabras
+    // Seleccionar palabras de forma aleatoria y colocarlas en la sopa
     int palabrasColocadas = 0;
-    for (int i = 0; i < numPalabras && palabrasColocadas < 5; i++) {
-        if (colocarPalabraAleatoria(sopa, palabras[i], filas, columnas)) {
-            palabrasColocadas++;
+    int usadas[MAX_WORDS] = {0}; // Arreglo para marcar las palabras ya usadas
+
+    while (palabrasColocadas < palabrasSugeridas && palabrasColocadas < numPalabras) {
+        int indiceAleatorio = rand() % numPalabras; // Seleccionar un índice aleatorio
+
+        if (!usadas[indiceAleatorio]) { // Verificar si la palabra ya fue usada
+            if (colocarPalabraAleatoria(sopa, palabras[indiceAleatorio], filas, columnas)) {
+                usadas[indiceAleatorio] = 1; // Marcar la palabra como usada
+                palabrasColocadas++;
+            }
         }
     }
 
@@ -106,10 +126,7 @@ int generarDireccionAleatoria() {
 // Colocar una palabra de forma aleatoria
 int colocarPalabraAleatoria(char sopa[MAX_SIZE][MAX_SIZE], const char *palabra, int filas, int columnas) {
     int direccion = generarDireccionAleatoria();
-    int len = 0;
-
-    // Longitud de la palabra
-    while (palabra[len] != '\0') len++;
+    int len = strlen(palabra);
 
     if (direccion == 0) { // Horizontal
         return colocarPalabraHorizontal(sopa, palabra, filas, columnas, len);
@@ -224,4 +241,13 @@ void mostrarSopa(char sopa[MAX_SIZE][MAX_SIZE], int filas, int columnas) {
         }
         putchar('\n');
     }
+}
+
+// Calcular longitud media de las palabras
+double calcularLongitudMedia(char palabras[MAX_WORDS][MAX_WORD_LEN], int numPalabras) {
+    int totalLongitud = 0;
+    for (int i = 0; i < numPalabras; i++) {
+        totalLongitud += strlen(palabras[i]);
+    }
+    return (double)totalLongitud / numPalabras;
 }
