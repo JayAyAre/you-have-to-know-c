@@ -152,7 +152,7 @@ bool comprovar_fi_joc(char tauler_mines[MAX_FIL][MAX_COL], char tauler_joc[MAX_F
  * @param maxfil (E): Número de filas del tablero.
  * @param maxcol (E): Número de columnas del tablero.
  */
-void destapar_caselles(char tauler_minas[MAX_FIL][MAX_COL], char tauler_joc[MAX_FIL][MAX_COL], int fila, int columna, int maxfil, int maxcol) {
+void destapar_caselles(char tauler_minas[MAX_FIL][MAX_COL], char tauler_joc[MAX_FIL][MAX_COL], int fila, int columna, int maxfil, int maxcol, int *fin) {
     // Verificar que la casilla está dentro del tablero
     if (fila < 0 || fila >= maxfil || columna < 0 || columna >= maxcol) {
         return; // Fuera de límites
@@ -165,6 +165,13 @@ void destapar_caselles(char tauler_minas[MAX_FIL][MAX_COL], char tauler_joc[MAX_
 
     // Destapamos la casilla actual
     tauler_joc[fila][columna] = tauler_minas[fila][columna];
+
+    // Si la casilla es una mina, se indica que el juego ha terminado
+    if (tauler_joc[fila][columna] == 'M')
+    {
+        *fin = 1;
+        return;
+    }
 
     // Si la casilla no contiene '0', no hace falta destapar las vecinas
     if (tauler_minas[fila][columna] != '0') {
@@ -201,62 +208,72 @@ void destapar_caselles(char tauler_minas[MAX_FIL][MAX_COL], char tauler_joc[MAX_
 
             Recuerda que al final del juego es necesario mostrar la puntuación obtenida.
 */
+#include <stdio.h>
+#include <stdlib.h>
 
-void destapar_caselles(char tauler_mines[MAX_FIL][MAX_COL], char tauler_joc[MAX_FIL][MAX_COL], int fila, int columna, int maxfil, int maxcol);
+#define NUM_MINES 5
+#define MAX_FIL 10
+#define MAX_COL 10
+
+void destapar_caselles(char tauler_mines[MAX_FIL][MAX_COL], char tauler_joc[MAX_FIL][MAX_COL], int fila, int columna, int maxfil, int maxcol, int *fin);
 bool comprovar_fi_joc(char tauler_mines[MAX_FIL][MAX_COL], char tauler_joc[MAX_FIL][MAX_COL], int maxfil, int maxcol);
 void inicializar_tableros(char tauler_mines[MAX_FIL][MAX_COL], char tauler_joc[MAX_FIL][MAX_COL], int maxfil, int maxcol);
 void mostrar_tablero(char tauler[MAX_FIL][MAX_COL], int maxfil, int maxcol);
 
 int main() {
-    // Declaración de los tableros
+
     char tauler_mines[MAX_FIL][MAX_COL];
     char tauler_joc[MAX_FIL][MAX_COL];
-    int maxfil = 10, maxcol = 10; // Tamaño fijo del tablero
-    int puntuacion = 0;          // Contador de puntuación
+    int fin_juego = 0;          // Indica si el juego ha terminado
+    int fila, columna, filaMax, columnaMax, total_celdas, puntuacion = 0;
+    int nDisparos = 0;
 
-    // Inicialización de los tableros
-    inicializar_tableros(tauler_mines, tauler_joc, maxfil, maxcol);
+    inicialitzar_tauler_mines(tauler_mines, MAX_FIL, MAX_COL, NUM_MINES);
 
-    printf("¡Bienvenido al Buscaminas!\n");
-    mostrar_tablero(tauler_joc, maxfil, maxcol);
-
-    // Bucle principal del juego
-    while (true) {
-        int fila, columna;
-
-        // Pedir coordenadas al usuario
-        printf("\nIntroduce las coordenadas (fila y columna, separadas por un espacio): ");
-        scanf("%d %d", &fila, &columna);
-
-        // Validar coordenadas
-        if (fila < 0 || fila >= maxfil || columna < 0 || columna >= maxcol) {
-            printf("Coordenadas inválidas. Intenta de nuevo.\n");
+    do
+    {
+        printf("¿Cuál es el tamaño del tablero? (filas y columnas, separadas por espacio): ");
+        scanf("%d %d", &filaMax, &columnaMax);
+        if (filaMax < 0 || filaMax > MAX_FIL || columnaMax < 0 || columnaMax > MAX_COL) {
+            printf("Tamaño inválido. Intenta de nuevo.\n");
             continue;
         }
+        total_celdas = filaMax * columnaMax;
+    } while (filaMax < MAX_FIL && columnaMax < MAX_COL);
 
-        // Verificar si el jugador disparó a una mina
-        if (tauler_mines[fila][columna] == 'M') {
-            printf("\n¡Has perdido! Disparaste a una mina.\n");
-            mostrar_tablero(tauler_mines, maxfil, maxcol);
+    printf("¡Bienvenido al Buscaminas simplificado!\n");
+    while (!fin_juego || !comprovar_fi_joc(tauler_mines, tauler_joc, MAX_FIL, MAX_COL)) {
+        mostrar_tauler_joc(tauler_joc, MAX_FIL, MAX_COL);
+
+        do
+        {
+            // Pedir coordenadas al usuario
+            printf("\nIntroduce las coordenadas (fila y columna, separadas por un espacio): ");
+            scanf("%d %d", &fila, &columna);
+
+            // Validar coordenadas
+            if (fila < 0 || fila >= MAX_FIL || columna < 0 || columna >= MAX_COL) {
+                printf("Coordenadas inválidas. Intenta de nuevo.\n");
+                continue;
+            }
+        } while (fila < 0 || fila >= MAX_FIL || columna < 0 || columna >= MAX_COL);
+
+
+        destapar_caselles(tauler_mines, tauler_joc, fila, columna, MAX_FIL, MAX_COL, &fin_juego);
+        if (fin_juego) {
+            printf("¡Has perdido! Disparaste a una mina.\n");
+            puntuacion = 0;
+            printf("¡Juego terminado!\n");
+            mostrar_tauler_joc(tauler_joc, MAX_FIL, MAX_COL);
             break;
         }
+        nDisparos++;
+    }
 
-        // Destapar casillas
-        destapar_caselles(tauler_mines, tauler_joc, fila, columna, maxfil, maxcol);
-
-        // Actualizar puntuación
-        puntuacion++;
-
-        // Mostrar el tablero actualizado
-        mostrar_tablero(tauler_joc, maxfil, maxcol);
-
-        // Comprobar si el juego ha terminado
-        if (comprovar_fi_joc(tauler_mines, tauler_joc, maxfil, maxcol)) {
-            printf("\n¡Felicidades! Has ganado.\n");
-            printf("Tu puntuación final es: %d\n", puntuacion);
-            mostrar_tablero(tauler_mines, maxfil, maxcol);
-            break;
-        }
+    if (!fin_juego && comprovar_fi_joc(tauler_mines, tauler_joc, MAX_FIL, MAX_COL))
+    {
+        int puntuacion = 100 * (NUM_MINES * total_celdas / nDisparos);
+        printf("Puntuación final: %d\n", puntuacion);
     }
 
     return 0;
