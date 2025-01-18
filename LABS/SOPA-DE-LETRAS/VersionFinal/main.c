@@ -1,6 +1,7 @@
-#include "sopa.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include "sopa.h"
 #include <time.h>
 
 int main() {
@@ -8,49 +9,37 @@ int main() {
     char sopa[MAX_SIZE][MAX_SIZE];
     char palabras[MAX_WORDS][MAX_WORD_LEN];
     int numPalabras = 0, filas, columnas;
-    char archivoEntrada[50];
-    const char *archivoSalida = "sopa.txt";
 
-    printf("Introduce el nombre del archivo de palabras (ej: palabras.txt): ");
-    scanf("%s", archivoEntrada);
+    char archivoEntrada[50];
+    printf("Introduce el nombre del archivo de palabras: ");
+    char c;
+    int i = 0;
+    while ((c = getchar()) != '\n' && i < 49) archivoEntrada[i++] = c;
+    archivoEntrada[i] = '\0';
 
     leerPalabras(archivoEntrada, palabras, &numPalabras);
     if (numPalabras == 0) {
-        printf("No se encontraron palabras o el archivo no existe.\n");
+        printf("No se encontraron palabras o archivo no existe.\n");
         return 1;
     }
 
-    double longitudMedia = calcularLongitudMedia(palabras, numPalabras);
-
-    int dimensionesValidas = 0;
-    while (!dimensionesValidas) {
-        printf("Introduce el numero de filas (entre %d y %d): ", MIN_SIZE, MAX_SIZE);
-        scanf("%d", &filas);
-        printf("Introduce el numero de columnas (entre %d y %d): ", MIN_SIZE, MAX_SIZE);
-        scanf("%d", &columnas);
-        if (filas >= MIN_SIZE && filas <= MAX_SIZE && columnas >= MIN_SIZE && columnas <= MAX_SIZE) {
-            dimensionesValidas = 1;
-        } else {
-            printf("Dimensiones no validas. Intenta de nuevo.\n");
-        }
-    }
-
-    int palabrasSugeridas = (int)(0.3 * (filas * columnas) / longitudMedia);
-    printf("Numero maximo de palabras sugerido: %d\n", palabrasSugeridas);
+    printf("Introduce las dimensiones (filas y columnas): ");
+    scanf("%d %d", &filas, &columnas);
 
     generarSopa(sopa, filas, columnas);
 
     int palabrasColocadas = 0;
-    for (int i = 0; i < numPalabras && palabrasColocadas < palabrasSugeridas; i++) {
-        if (colocarPalabraAleatoria(sopa, palabras[i], filas, columnas)) {
-            palabrasColocadas++;
-        }
+    for (int i = 0; i < numPalabras; i++) {
+        if (colocarPalabraAleatoria(sopa, palabras[i], filas, columnas)) palabrasColocadas++;
     }
 
     rellenarEspacios(sopa, filas, columnas);
-    mostrarSopa(sopa, filas, columnas);
-    guardarSopa(archivoSalida, sopa, filas, columnas);
 
-    printf("Sopa guardada en: %s\n", archivoSalida);
+    printf("\nSopa generada:\n");
+    mostrarSopa(sopa, filas, columnas);
+
+    guardarSopa("sopa.txt", sopa, filas, columnas);
+
+    printf("Sopa guardada en sopa.txt\n");
     return 0;
 }

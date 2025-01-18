@@ -1,23 +1,38 @@
-#include "sopa.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "sopa.h"
 
 void leerPalabras(const char *filename, char palabras[MAX_WORDS][MAX_WORD_LEN], int *numPalabras) {
     FILE *file = fopen(filename, "r");
-
     if (file == NULL) {
-        printf("No se pudo abrir el fichero: %s\n", filename);
         *numPalabras = 0;
-    } else {
-        int i = 0;
-        while (i < MAX_WORDS && fscanf(file, "%s", palabras[i]) == 1) {
-            i++;
-        }
-        *numPalabras = i;
-        fclose(file);
+        return;
     }
+
+    int i = 0, j = 0;
+    char c;
+
+    while (i < MAX_WORDS && (c = fgetc(file)) != EOF) {
+        if (c == '\n' || c == ' ') {
+            if (j > 0) { // Si hay una palabra en construcción
+                palabras[i][j] = '\0'; // Finaliza la palabra
+                i++;
+                j = 0; // Reinicia el índice para la siguiente palabra
+            }
+        } else if (j < MAX_WORD_LEN - 1) {
+            palabras[i][j++] = c; // Añade el carácter a la palabra actual
+        }
+    }
+
+    if (j > 0) { // Agrega la última palabra si el archivo no termina con un delimitador
+        palabras[i][j] = '\0';
+        i++;
+    }
+
+    *numPalabras = i; // Guarda el número total de palabras leídas
+    fclose(file);
 }
 
 void generarSopa(char sopa[MAX_SIZE][MAX_SIZE], int filas, int columnas) {
@@ -109,7 +124,6 @@ int colocarPalabraDiagonal(char sopa[MAX_SIZE][MAX_SIZE], const char *palabra, i
 }
 
 void rellenarEspacios(char sopa[MAX_SIZE][MAX_SIZE], int filas, int columnas) {
-    srand((unsigned int)time(NULL));
     for (int i = 0; i < filas; i++) {
         for (int j = 0; j < columnas; j++) {
             if (sopa[i][j] == ' ') {
@@ -124,24 +138,20 @@ void guardarSopa(const char *filename, char sopa[MAX_SIZE][MAX_SIZE], int filas,
     if (file != NULL) {
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
-                fprintf(file, "%c ", sopa[i][j]);
+                fprintf(file, "%c", sopa[i][j]);
             }
             fprintf(file, "\n");
         }
         fclose(file);
-    } else {
-        printf("No se pudo guardar la sopa en el archivo: %s\n", filename);
     }
 }
 
 void mostrarSopa(char sopa[MAX_SIZE][MAX_SIZE], int filas, int columnas) {
-    printf("\nSopa de Letras:\n");
     for (int i = 0; i < filas; i++) {
         for (int j = 0; j < columnas; j++) {
-            putchar(sopa[i][j]);
-            putchar(' ');
+            printf("%c ", sopa[i][j]);
         }
-        putchar('\n');
+        printf("\n");
     }
 }
 
