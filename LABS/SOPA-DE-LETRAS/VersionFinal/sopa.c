@@ -16,22 +16,22 @@ void leerPalabras(const char *filename, char palabras[MAX_WORDS][MAX_WORD_LEN], 
 
     while (i < MAX_WORDS && (c = fgetc(file)) != EOF) {
         if (c == '\n' || c == ' ') {
-            if (j > 0) { // Si hay una palabra en construcción
-                palabras[i][j] = '\0'; // Finaliza la palabra
+            if (j > 0) {
+                palabras[i][j] = '\0';
                 i++;
-                j = 0; // Reinicia el índice para la siguiente palabra
+                j = 0;
             }
         } else if (j < MAX_WORD_LEN - 1) {
-            palabras[i][j++] = c; // Añade el carácter a la palabra actual
+            palabras[i][j++] = c;
         }
     }
 
-    if (j > 0) { // Agrega la última palabra si el archivo no termina con un delimitador
+    if (j > 0) {
         palabras[i][j] = '\0';
         i++;
     }
 
-    *numPalabras = i; // Guarda el número total de palabras leídas
+    *numPalabras = i;
     fclose(file);
 }
 
@@ -51,76 +51,79 @@ int colocarPalabraAleatoria(char sopa[MAX_SIZE][MAX_SIZE], const char *palabra, 
     int direccion = generarDireccionAleatoria();
     int len = strlen(palabra);
 
+    int resultado = 0;
     if (direccion == 0) {
-        return colocarPalabraHorizontal(sopa, palabra, filas, columnas, len);
+        resultado =  colocarPalabraHorizontal(sopa, palabra, filas, columnas, len);
     } else if (direccion == 1) {
-        return colocarPalabraVertical(sopa, palabra, filas, columnas, len);
+        resultado =  colocarPalabraVertical(sopa, palabra, filas, columnas, len);
     } else {
-        return colocarPalabraDiagonal(sopa, palabra, filas, columnas, len);
+        resultado = colocarPalabraDiagonal(sopa, palabra, filas, columnas, len);
     }
+
+    return resultado;
 }
 
 int colocarPalabraHorizontal(char sopa[MAX_SIZE][MAX_SIZE], const char *palabra, int filas, int columnas, int len) {
-    for (int i = 0; i < filas; i++) {
-        for (int j = 0; j <= columnas - len; j++) {
+    int colocada = 0;
+    for (int i = 0; i < filas && !colocada; i++) {
+        for (int j = 0; j <= columnas - len && !colocada; j++) {
             int puedeColocar = 1;
             for (int k = 0; k < len; k++) {
                 if (sopa[i][j + k] != ' ' && sopa[i][j + k] != palabra[k]) {
                     puedeColocar = 0;
-                    break;
                 }
             }
             if (puedeColocar) {
                 for (int k = 0; k < len; k++) {
                     sopa[i][j + k] = palabra[k];
                 }
-                return 1;
+                colocada = 1;
             }
         }
     }
-    return 0;
+    return colocada;
 }
 
 int colocarPalabraVertical(char sopa[MAX_SIZE][MAX_SIZE], const char *palabra, int filas, int columnas, int len) {
-    for (int i = 0; i <= filas - len; i++) {
-        for (int j = 0; j < columnas; j++) {
+    int colocada = 0;
+    for (int i = 0; i <= filas - len && !colocada; i++) {
+        for (int j = 0; j < columnas && !colocada; j++) {
             int puedeColocar = 1;
             for (int k = 0; k < len; k++) {
                 if (sopa[i + k][j] != ' ' && sopa[i + k][j] != palabra[k]) {
                     puedeColocar = 0;
-                    break;
                 }
             }
             if (puedeColocar) {
                 for (int k = 0; k < len; k++) {
                     sopa[i + k][j] = palabra[k];
                 }
-                return 1;
+                colocada = 1;
             }
         }
     }
-    return 0;
+    return colocada;
 }
 
 int colocarPalabraDiagonal(char sopa[MAX_SIZE][MAX_SIZE], const char *palabra, int filas, int columnas, int len) {
-    for (int i = 0; i <= filas - len; i++) {
-        for (int j = 0; j <= columnas - len; j++) {
+    int colocada = 0;
+    for (int i = 0; i <= filas - len && !colocada; i++) {
+        for (int j = 0; j <= columnas - len && !colocada; j++) {
             int puedeColocar = 1;
             for (int k = 0; k < len; k++) {
                 if (sopa[i + k][j + k] != ' ' && sopa[i + k][j + k] != palabra[k]) {
                     puedeColocar = 0;
-                    break;
                 }
             }
             if (puedeColocar) {
                 for (int k = 0; k < len; k++) {
                     sopa[i + k][j + k] = palabra[k];
                 }
-                return 1;
+                colocada = 1;
             }
         }
     }
-    return 0;
+    return colocada;
 }
 
 void rellenarEspacios(char sopa[MAX_SIZE][MAX_SIZE], int filas, int columnas) {
